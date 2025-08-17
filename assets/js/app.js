@@ -224,9 +224,8 @@ function displayResult(
     suggestionsHTML += `<div class="suggestion-desc">We found ${grammarSuggestions.length} grammatical errors in your text</div>`;
     suggestionsHTML += '<div class="suggestion-text">';
     grammarSuggestions.forEach((suggestion) => {
-      suggestionsHTML += `<span class="original-text">${suggestion.original}</span> <span class="improved-text">${suggestion.improved}</span> | `;
+      suggestionsHTML += `<div class="improvement-item"><span class="original-text">${suggestion.original}</span> <span class="improvement-arrow"></span> <span class="improved-text">${suggestion.improved}</span></div>`;
     });
-    suggestionsHTML = suggestionsHTML.slice(0, -3); // Remove trailing |
     suggestionsHTML += "</div></div></div>";
   }
 
@@ -239,8 +238,8 @@ function displayResult(
     suggestionsHTML += `<div class="suggestion-desc">Enhanced professionalism while maintaining approachability</div>`;
     suggestionsHTML += '<div class="suggestion-text">';
     toneSuggestions.forEach((suggestion) => {
-      suggestionsHTML += `<span class="original-text">"${suggestion.original}"</span> → <span class="improved-text">"${suggestion.improved}"</span><br>`;
-      toneImprovementsHTML += `<p><i class="fas fa-check-circle" style="color: var(--success);"></i> Replaced "${suggestion.original}" with "${suggestion.improved}"</p>`;
+      suggestionsHTML += `<div class="improvement-item"><span class="original-text">"${suggestion.original}"</span> <span class="improvement-arrow"></span> <span class="improved-text">"${suggestion.improved}"</span></div>`;
+      toneImprovementsHTML += `<div class="improvement-item"><i class="fas fa-check-circle" style="color: var(--success);"></i> Replaced "${suggestion.original}" with "${suggestion.improved}"</div>`;
     });
     suggestionsHTML += "</div></div></div>";
   }

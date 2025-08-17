@@ -56,7 +56,6 @@ header p {
 .app-container {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
@@ -290,6 +289,27 @@ header p {
     transform: translateY(-50%);
     color: var(--success);
     font-weight: bold;
+}
+
+.improvement-arrow {
+    color: var(--success);
+    font-weight: bold;
+    margin: 0 8px;
+}
+
+.improvement-arrow::before {
+    content: "→";
+}
+
+.improvement-item {
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: rgba(248, 249, 250, 0.5);
+}
+
+.improvement-item:last-child {
+    margin-bottom: 0;
 }
 
 .original-text {
