@@ -18,6 +18,8 @@ const apiKeyInput = document.getElementById("api-key");
 const ollamaApiUrlInput = document.getElementById("ollama-api-url");
 const saveSettingsButton = document.getElementById("save-settings-button");
 const toneImprovementsEl = document.getElementById("tone-improvements");
+const apiKeyContainer = document.getElementById("api-key-container");
+const ollamaSettingsContainer = document.getElementById("ollama-settings-container");
 
 let activeTone = "neutral";
 
@@ -36,10 +38,29 @@ window.addEventListener("click", (event) => {
   }
 });
 
+// Handle API provider change
+apiProviderSelect.addEventListener("change", () => {
+  updateSettingsVisibility();
+});
+
+// Function to update visibility of settings based on provider
+function updateSettingsVisibility() {
+  const provider = apiProviderSelect.value;
+  
+  if (provider === "google") {
+    apiKeyContainer.classList.remove("hidden");
+    ollamaSettingsContainer.classList.add("hidden");
+  } else if (provider === "ollama") {
+    apiKeyContainer.classList.add("hidden");
+    ollamaSettingsContainer.classList.remove("hidden");
+  }
+}
+
 // Load Settings
 apiProviderSelect.value = settings.apiProvider;
 apiKeyInput.value = settings.apiKey;
 ollamaApiUrlInput.value = settings.ollamaApiUrl;
+updateSettingsVisibility(); // Set initial visibility
 
 // Save Settings
 saveSettingsButton.addEventListener("click", () => {
