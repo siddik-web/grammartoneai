@@ -97,10 +97,19 @@
                     <option value="google">Google</option>
                     <option value="ollama">Ollama</option>
                 </select>
-                <label for="api-key">API Key:</label>
-                <input type="text" id="api-key" size="40">
-                <label for="ollama-api-url">Ollama API URL:</label>
-                <input type="text" id="ollama-api-url" size="40">
+                
+                <div id="api-key-container" class="setting-container">
+                    <label for="api-key">API Key:</label>
+                    <input type="text" id="api-key" size="40">
+                    <p class="setting-description">Get your API key from <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a></p>
+                </div>
+                
+                <div id="ollama-settings-container" class="setting-container">
+                    <label for="ollama-api-url">Ollama API URL:</label>
+                    <input type="text" id="ollama-api-url" size="40">
+                    <p class="setting-description">Default: http://localhost:11434/api/generate or use the PHP proxy at api/ollama-proxy.php</p>
+                </div>
+                
                 <button id="save-settings-button">Save Settings</button>
             </div>
         </div>

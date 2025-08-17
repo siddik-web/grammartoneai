@@ -1,0 +1,10 @@
+# Enable PHP error reporting for debugging
+php_flag display_errors on
+
+# Set the default charset
+AddDefaultCharset UTF-8
+
+# Handle CORS for all requests
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type"

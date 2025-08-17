@@ -2,7 +2,7 @@
 const settings = {
     apiProvider: 'google',
     apiKey: 'YOUR_API_KEY',
-    ollamaApiUrl: 'http://localhost:11434/api/generate',
+    ollamaApiUrl: 'api/ollama-proxy.php', // Using PHP proxy to avoid CORS issues
 };
 
 function saveSettings() {

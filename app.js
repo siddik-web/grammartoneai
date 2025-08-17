@@ -86,6 +86,8 @@ function getPrompt(text, tone) {
             The "corrected_text" key should contain the corrected version of the following text, adjusted for a ${tone} tone.
             The "tone_suggestions" key should contain an array of objects, where each object has "original" and "improved" keys, showing how the tone was adjusted.
             The "grammar_suggestions" key should contain an array of objects, where each object has "original" and "improved" keys, showing the grammar corrections made.
+            The "readability_score" should be a numeric Flesch-Kincaid readability score (0-100, where higher is more readable).
+            The "grade_level" should be a numeric Flesch-Kincaid grade level (0-20, where 0 is kindergarten and 15 is college level).
             Text: ${text}`;
 }
 
@@ -134,13 +136,17 @@ function analyzeWithGoogle(text, tone) {
 }
 
 function analyzeWithOllama(text, tone) {
-  const url = settings.ollamaApiUrl;
+  // Use our PHP proxy instead of calling Ollama directly
+  const url = "api/ollama-proxy.php";
 
+  // Prepare data without an empty options array
   const data = {
     model: "gemma3:1b",
     prompt: getPrompt(text, tone),
     stream: false,
-    format: "json",
+    format: "json"
+    // Note: We're intentionally not sending an empty options array
+    // as it causes issues with Ollama's API
   };
 
   fetch(url, {
@@ -152,6 +158,12 @@ function analyzeWithOllama(text, tone) {
   })
     .then((response) => response.json())
     .then((data) => {
+      // If we get an error from our proxy, handle it
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      // Parse the response from Ollama
       const response = JSON.parse(data.response);
       displayResult(
         text,
@@ -165,7 +177,7 @@ function analyzeWithOllama(text, tone) {
     .catch((error) => {
       console.error("Error:", error);
       resultDiv.innerHTML =
-        '<p class="error">An error occurred while analyzing the text.</p>';
+        '<p class="error">An error occurred while analyzing the text: ' + error.message + '</p>';
     });
 }
 

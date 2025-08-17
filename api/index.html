@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ollama API Proxy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .endpoint {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ollama API Proxy</h1>
+        
+        <p>This is a PHP-based proxy for the Ollama API that handles CORS issues when making requests from the browser.</p>
+        
+        <div class="endpoint">
+            <h2>Endpoint</h2>
+            <p><code>POST /api/ollama-proxy.php</code></p>
+            
+            <h3>Request Format</h3>
+            <pre>{
+  "model": "gemma3:1b",
+  "prompt": "Your prompt here",
+  "stream": false,
+  "format": "json",
+  "options": {}
+}</pre>
+            
+            <h3>Example Request</h3>
+            <pre>curl -X POST http://localhost/GrammarToneAI/api/ollama-proxy.php \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gemma3:1b",
+    "prompt": "Why is the sky blue?",
+    "stream": false,
+    "format": "json"
+  }'</pre>
+        </div>
+        
+        <div class="endpoint">
+            <h2>Features</h2>
+            <ul>
+                <li>Handles CORS automatically</li>
+                <li>Validates input data</li>
+                <li>Provides error handling</li>
+                <li>Configurable settings</li>
+                <li>Request logging (optional)</li>
+                <li>OOP design for maintainability</li>
+            </ul>
+        </div>
+        
+        <div class="endpoint">
+            <h2>Files</h2>
+            <ul>
+                <li><code>ollama-proxy.php</code> - Main endpoint</li>
+                <li><code>OllamaProxy.php</code> - Main class implementation</li>
+                <li><code>Config.php</code> - Configuration settings</li>
+                <li><code>test-proxy.php</code> - Test script</li>
+                <li><code>README.md</code> - Documentation</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
