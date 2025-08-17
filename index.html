@@ -3,111 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar and Tone Checker</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-        }
-        h1 {
-            margin-bottom: 2rem;
-        }
-        textarea {
-            width: 100%;
-            max-width: 500px;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            border: 1px solid #ccc;
-            margin-bottom: 1rem;
-        }
-        button {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.25rem;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            margin-bottom: 1rem;
-        }
-        #result {
-            width: 100%;
-            max-width: 500px;
-            padding: 1rem;
-            border-radius: 0.25rem;
-        }
-        .card {
-            border: 1px solid #ccc;
-            border-radius: 0.25rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .card h2 {
-            margin-top: 0;
-        }
-    </style>
+    <title>GrammarTone AI | Smart Writing Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Grammar and Tone Checker</h1>
-    <textarea id="text-input" rows="10" cols="50" placeholder="Enter text here..."></textarea>
-    <br>
-    <button id="analyze-button">Analyze Text</button>
-    <div id="result"></div>
-    <script src="config.js"></script>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-spell-check"></i> GrammarTone AI</h1>
+            <p>Advanced grammar correction with tone adjustment suggestions. Make your writing clearer and more effective.</p>
+        </header>
+
+        <div class="app-container">
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-edit"></i>
+                    <h2>Your Text</h2>
+                </div>
+                <textarea class="text-area" id="text-input" placeholder="Type or paste your text here..."></textarea>
+                
+                <div class="controls">
+                    <div class="tone-selector">
+                        <label>Adjust Tone:</label>
+                        <div class="tone-buttons">
+                            <button class="tone-btn" data-tone="formal"><i class="fas fa-suitcase"></i> Formal</button>
+                            <button class="tone-btn active" data-tone="neutral"><i class="fas fa-balance-scale"></i> Neutral</button>
+                            <button class="tone-btn" data-tone="informal"><i class="fas fa-smile"></i> Informal</button>
+                        </div>
+                    </div>
+                    <button class="action-btn" id="analyze-button">
+                        <i class="fas fa-magic"></i> Analyze & Improve
+                    </button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="word-count">0</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sentence-count">0</div>
+                        <div class="stat-label">Sentences</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="readability">N/A</div>
+                        <div class="stat-label">Readability</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="grade-level">N/A</div>
+                        <div class="stat-label">Grade Level</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="section-title">
+                    <i class="fas fa-star"></i>
+                    <h2>Improved Text</h2>
+                </div>
+                
+                <div class="text-area" id="result"></div>
+
+                <div class="suggestions" id="suggestions-container" style="display: none;">
+                </div>
+
+                <div class="tone-analysis" id="tone-analysis-container" style="display: none;">
+                    <h3><i class="fas fa-chart-bar"></i> Tone Analysis</h3>
+                    <p>Your original tone was moderately informal. We adjusted it to be more professional for a work context.</p>
+                    
+                    <div class="tone-meter">
+                        <div class="tone-fill"></div>
+                    </div>
+                    <div class="tone-labels">
+                        <span>Casual</span>
+                        <span>Neutral</span>
+                        <span>Formal</span>
+                    </div>
+
+                    <div class="tone-description">
+                        <p><strong>Key improvements made:</strong></p>
+                        <p id="tone-improvements"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Settings</h2>
+                <label for="api-provider">API Provider:</label>
+                <select id="api-provider">
+                    <option value="google">Google</option>
+                    <option value="ollama">Ollama</option>
+                </select>
+                <label for="api-key">API Key:</label>
+                <input type="text" id="api-key" size="40">
+                <label for="ollama-api-url">Ollama API URL:</label>
+                <input type="text" id="ollama-api-url" size="40">
+                <button id="save-settings-button">Save Settings</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>GrammarTone AI &copy; 2023 | AI-powered writing assistant for clearer communication</p>
+            <p style="margin-top: 0.5rem;"><a href="#" id="settings-link">Settings</a> | <i class="fas fa-shield-alt"></i> Your text is processed securely and never stored</p>
+        </footer>
+    </div>
+
+    <script src="settings.js"></script>
     <script>
         const textInput = document.getElementById('text-input');
         const analyzeButton = document.getElementById('analyze-button');
         const resultDiv = document.getElementById('result');
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        const toneAnalysisContainer = document.getElementById('tone-analysis-container');
+        const wordCountEl = document.getElementById('word-count');
+        const sentenceCountEl = document.getElementById('sentence-count');
+        const readabilityEl = document.getElementById('readability');
+        const gradeLevelEl = document.getElementById('grade-level');
+        const toneButtons = document.querySelectorAll('.tone-btn');
+        const settingsLink = document.getElementById('settings-link');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeButton = document.querySelector('.close-button');
+        const apiProviderSelect = document.getElementById('api-provider');
+        const apiKeyInput = document.getElementById('api-key');
+        const ollamaApiUrlInput = document.getElementById('ollama-api-url');
+        const saveSettingsButton = document.getElementById('save-settings-button');
+        const toneImprovementsEl = document.getElementById('tone-improvements');
 
-        function simpleDiff(oldText, newText) {
-            const oldWords = oldText.split(/\s+/);
-            const newWords = newText.split(/\s+/);
-            let i = 0, j = 0;
-            let result = '';
+        let activeTone = 'neutral';
 
-            while (i < oldWords.length || j < newWords.length) {
-                if (i < oldWords.length && j < newWords.length && oldWords[i] === newWords[j]) {
-                    result += oldWords[i] + ' ';
-                    i++;
-                    j++;
-                } else {
-                    if (i < oldWords.length) {
-                        result += `<span style="background-color: lightcoral;">${oldWords[i]}</span> `;
-                        i++;
-                    }
-                    if (j < newWords.length) {
-                        result += `<span style="background-color: lightgreen;">${newWords[j]}</span> `;
-                        j++;
-                    }
-                }
+        // Settings Modal
+        settingsLink.addEventListener('click', () => settingsModal.style.display = 'block');
+        closeButton.addEventListener('click', () => settingsModal.style.display = 'none');
+        window.addEventListener('click', (event) => {
+            if (event.target == settingsModal) {
+                settingsModal.style.display = 'none';
             }
-            return result;
-        }
+        });
 
+        // Load Settings
+        apiProviderSelect.value = settings.apiProvider;
+        apiKeyInput.value = settings.apiKey;
+        ollamaApiUrlInput.value = settings.ollamaApiUrl;
+
+        // Save Settings
+        saveSettingsButton.addEventListener('click', () => {
+            settings.apiProvider = apiProviderSelect.value;
+            settings.apiKey = apiKeyInput.value;
+            settings.ollamaApiUrl = ollamaApiUrlInput.value;
+            saveSettings();
+            alert('Settings saved!');
+            settingsModal.style.display = 'none';
+        });
+
+        // Tone Selection
+        toneButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                toneButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                activeTone = button.dataset.tone;
+            });
+        });
+
+        // Analyze Text
         analyzeButton.addEventListener('click', () => {
             const text = textInput.value;
             if (!text) {
-                resultDiv.innerHTML = 'Please enter some text to analyze.';
+                resultDiv.innerHTML = '<p class="error">Please enter some text to analyze.</p>';
                 return;
             }
 
-            const apiKey = API_KEY;
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Analyzing...</p></div>';
+            suggestionsContainer.style.display = 'none';
+            toneAnalysisContainer.style.display = 'none';
+
+            if (settings.apiProvider === 'google') {
+                analyzeWithGoogle(text, activeTone);
+            } else if (settings.apiProvider === 'ollama') {
+                analyzeWithOllama(text, activeTone);
+            }
+        });
+
+        function getPrompt(text, tone) {
+            return `Return a JSON object with five keys: "corrected_text", "tone_suggestions", "grammar_suggestions", "readability_score" (Flesch-Kincaid score), and "grade_level" (Flesch-Kincaid grade level).
+            The "corrected_text" key should contain the corrected version of the following text, adjusted for a ${tone} tone.
+            The "tone_suggestions" key should contain an array of objects, where each object has "original" and "improved" keys, showing how the tone was adjusted.
+            The "grammar_suggestions" key should contain an array of objects, where each object has "original" and "improved" keys, showing the grammar corrections made.
+            Text: ${text}`
+        }
+
+        function analyzeWithGoogle(text, tone) {
+            const apiKey = settings.apiKey;
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             const data = {
                 "contents": [{
                     "parts": [{
-                        "text": `Return a JSON object with two keys: "corrected_text" and "tone_suggestions". The "corrected_text" key should contain the corrected version of the following text, and the "tone_suggestions" key should contain an array of strings with suggestions for improving the tone of the text. Text: ${text}`
+                        "text": getPrompt(text, tone)
                     }]
                 }]
             };
-
-            resultDiv.innerHTML = 'Analyzing...';
 
             fetch(url, {
                 method: 'POST',
@@ -121,37 +218,97 @@
                 const rawResponse = data.candidates[0].content.parts[0].text;
                 const jsonResponse = rawResponse.replace(/```json\n(.*?)\n```/s, '$1');
                 const response = JSON.parse(jsonResponse);
-
-                const correctedText = response.corrected_text;
-                const toneSuggestions = response.tone_suggestions;
-
-                const correctedHTML = simpleDiff(text, correctedText);
-                let suggestionsHTML = '';
-                if (toneSuggestions && toneSuggestions.length > 0) {
-                    suggestionsHTML = '<ul>';
-                    toneSuggestions.forEach(suggestion => {
-                        suggestionsHTML += `<li>${suggestion}</li>`;
-                    });
-                    suggestionsHTML += '</ul>';
-                } else {
-                    suggestionsHTML = '<p>No tone suggestions available.</p>';
-                }
-
-                resultDiv.innerHTML = `
-                    <div class="card">
-                        <h2>Corrected Text</h2>
-                        <p>${correctedHTML}</p>
-                    </div>
-                    <div class="card">
-                        <h2>Tone Suggestions</h2>
-                        ${suggestionsHTML}
-                    </div>
-                `;
+                displayResult(text, response.corrected_text, response.tone_suggestions, response.grammar_suggestions, response.readability_score, response.grade_level);
             })
             .catch(error => {
                 console.error('Error:', error);
-                resultDiv.innerHTML = 'An error occurred while analyzing the text.';
+                resultDiv.innerHTML = '<p class="error">An error occurred while analyzing the text.</p>';
             });
+        }
+
+        function analyzeWithOllama(text, tone) {
+            const url = settings.ollamaApiUrl;
+
+            const data = {
+                "model": "gemma3:1b",
+                "prompt": getPrompt(text, tone),
+                 "stream": false,
+                 "format": "json"
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const response = JSON.parse(data.response)
+                displayResult(text, response.corrected_text, response.tone_suggestions, response.grammar_suggestions, response.readability_score, response.grade_level);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = '<p class="error">An error occurred while analyzing the text.</p>';
+            });
+        }
+
+        function displayResult(originalText, correctedText, toneSuggestions, grammarSuggestions, readabilityScore, gradeLevel) {
+            resultDiv.innerHTML = correctedText;
+
+            let suggestionsHTML = '';
+            let toneImprovementsHTML = '';
+
+            if (grammarSuggestions && grammarSuggestions.length > 0) {
+                suggestionsHTML += '<div class="suggestion-item">';
+                suggestionsHTML += '<div class="suggestion-icon grammar-icon"><i class="fas fa-exclamation-circle"></i></div>';
+                suggestionsHTML += '<div class="suggestion-content">';
+                suggestionsHTML += `<div class="suggestion-title">Grammar Correction</div>`;
+                suggestionsHTML += `<div class="suggestion-desc">We found ${grammarSuggestions.length} grammatical errors in your text</div>`;
+                suggestionsHTML += '<div class="suggestion-text">';
+                grammarSuggestions.forEach(suggestion => {
+                    suggestionsHTML += `<span class="original-text">${suggestion.original}</span> <span class="improved-text">${suggestion.improved}</span> | `;
+                });
+                suggestionsHTML = suggestionsHTML.slice(0, -3); // Remove trailing | 
+                suggestionsHTML += '</div></div></div>';
+            }
+
+            if (toneSuggestions && toneSuggestions.length > 0) {
+                suggestionsHTML += '<div class="suggestion-item">';
+                suggestionsHTML += '<div class="suggestion-icon tone-icon"><i class="fas fa-comment-alt"></i></div>';
+                suggestionsHTML += '<div class="suggestion-content">';
+                suggestionsHTML += `<div class="suggestion-title">Tone Improvement</div>`;
+                suggestionsHTML += `<div class="suggestion-desc">Enhanced professionalism while maintaining approachability</div>`;
+                suggestionsHTML += '<div class="suggestion-text">';
+                toneSuggestions.forEach(suggestion => {
+                    suggestionsHTML += `<span class="original-text">"${suggestion.original}"</span> → <span class="improved-text">"${suggestion.improved}"</span><br>`;
+                    toneImprovementsHTML += `<p><i class="fas fa-check-circle" style="color: var(--success);"></i> Replaced "${suggestion.original}" with "${suggestion.improved}"</p>`;
+                });
+                suggestionsHTML += '</div></div></div>';
+            }
+
+            if (suggestionsHTML) {
+                suggestionsContainer.innerHTML = suggestionsHTML;
+                suggestionsContainer.style.display = 'block';
+                toneAnalysisContainer.style.display = 'block';
+                toneImprovementsEl.innerHTML = toneImprovementsHTML;
+            } else {
+                suggestionsContainer.style.display = 'none';
+                toneAnalysisContainer.style.display = 'none';
+            }
+
+            // Update stats
+            wordCountEl.textContent = correctedText.split(/\s+/).filter(word => word.length > 0).length;
+            sentenceCountEl.textContent = correctedText.split(/[.!?]+/).filter(sentence => sentence.length > 0).length;
+            readabilityEl.textContent = readabilityScore !== undefined ? readabilityScore.toFixed(1) : 'N/A';
+            gradeLevelEl.textContent = gradeLevel !== undefined ? gradeLevel.toFixed(1) : 'N/A';
+        }
+
+        textInput.addEventListener('input', () => {
+            const text = textInput.value;
+            wordCountEl.textContent = text.split(/\s+/).filter(word => word.length > 0).length;
+            sentenceCountEl.textContent = text.split(/[.!?]+/).filter(sentence => sentence.length > 0).length;
         });
     </script>
 </body>
