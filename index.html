@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar and Tone Checker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        h1 {
+            margin-bottom: 2rem;
+        }
+        textarea {
+            width: 100%;
+            max-width: 500px;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #ccc;
+            margin-bottom: 1rem;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        #result {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem;
+            border-radius: 0.25rem;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Grammar and Tone Checker</h1>
+    <textarea id="text-input" rows="10" cols="50" placeholder="Enter text here..."></textarea>
+    <br>
+    <button id="analyze-button">Analyze Text</button>
+    <div id="result"></div>
+    <script src="config.js"></script>
+    <script>
+        const textInput = document.getElementById('text-input');
+        const analyzeButton = document.getElementById('analyze-button');
+        const resultDiv = document.getElementById('result');
+
+        function simpleDiff(oldText, newText) {
+            const oldWords = oldText.split(/\s+/);
+            const newWords = newText.split(/\s+/);
+            let i = 0, j = 0;
+            let result = '';
+
+            while (i < oldWords.length || j < newWords.length) {
+                if (i < oldWords.length && j < newWords.length && oldWords[i] === newWords[j]) {
+                    result += oldWords[i] + ' ';
+                    i++;
+                    j++;
+                } else {
+                    if (i < oldWords.length) {
+                        result += `<span style="background-color: lightcoral;">${oldWords[i]}</span> `;
+                        i++;
+                    }
+                    if (j < newWords.length) {
+                        result += `<span style="background-color: lightgreen;">${newWords[j]}</span> `;
+                        j++;
+                    }
+                }
+            }
+            return result;
+        }
+
+        analyzeButton.addEventListener('click', () => {
+            const text = textInput.value;
+            if (!text) {
+                resultDiv.innerHTML = 'Please enter some text to analyze.';
+                return;
+            }
+
+            const apiKey = API_KEY;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const data = {
+                "contents": [{
+                    "parts": [{
+                        "text": `Return a JSON object with two keys: "corrected_text" and "tone_suggestions". The "corrected_text" key should contain the corrected version of the following text, and the "tone_suggestions" key should contain an array of strings with suggestions for improving the tone of the text. Text: ${text}`
+                    }]
+                }]
+            };
+
+            resultDiv.innerHTML = 'Analyzing...';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const rawResponse = data.candidates[0].content.parts[0].text;
+                const jsonResponse = rawResponse.replace(/```json\n(.*?)\n```/s, '$1');
+                const response = JSON.parse(jsonResponse);
+
+                const correctedText = response.corrected_text;
+                const toneSuggestions = response.tone_suggestions;
+
+                const correctedHTML = simpleDiff(text, correctedText);
+                let suggestionsHTML = '';
+                if (toneSuggestions && toneSuggestions.length > 0) {
+                    suggestionsHTML = '<ul>';
+                    toneSuggestions.forEach(suggestion => {
+                        suggestionsHTML += `<li>${suggestion}</li>`;
+                    });
+                    suggestionsHTML += '</ul>';
+                } else {
+                    suggestionsHTML = '<p>No tone suggestions available.</p>';
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="card">
+                        <h2>Corrected Text</h2>
+                        <p>${correctedHTML}</p>
+                    </div>
+                    <div class="card">
+                        <h2>Tone Suggestions</h2>
+                        ${suggestionsHTML}
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = 'An error occurred while analyzing the text.';
+            });
+        });
+    </script>
+</body>
+</html>
